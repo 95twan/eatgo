@@ -2,6 +2,7 @@ package com.example.eatgo.service;
 
 import com.example.eatgo.domain.Restaurant;
 import com.example.eatgo.domain.RestaurantRepository;
+import com.example.eatgo.dto.RestaurantDto;
 import com.example.eatgo.exception.RestaurantNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,12 +79,12 @@ class RestaurantServiceTest {
                     .build();
         });
 
-        Restaurant restaurant = Restaurant.builder()
+        RestaurantDto.Request request = RestaurantDto.Request.builder()
                 .categoryId(1L)
                 .name("Beryong")
                 .address("Busan")
                 .build();
-        Restaurant created = restaurantService.addRestaurant(restaurant);
+        Restaurant created = restaurantService.addRestaurant(request);
 
         assertEquals(1234L, created.getId());
     }
@@ -98,7 +99,9 @@ class RestaurantServiceTest {
                 .build();
         given(restaurantRepository.findById(1004L)).willReturn(Optional.of(restaurant));
 
-        restaurantService.updateRestaurant(1004L, "Sool zip", "Busan");
+        RestaurantDto.Request requestData = RestaurantDto.Request.builder().name("Sool zip").address("Busan").build();
+
+        restaurantService.updateRestaurant(1004L, requestData);
 
         assertEquals("Sool zip", restaurant.getName());
         assertEquals("Busan", restaurant.getAddress());
@@ -107,7 +110,8 @@ class RestaurantServiceTest {
     @Test
     public void updateRestaurantWithNotExisted(){
         given(restaurantRepository.findById(444L)).willThrow(new RestaurantNotFoundException(444L));
+        RestaurantDto.Request requestData = RestaurantDto.Request.builder().name("Sool zip").address("Busan").build();
         assertThrows(RestaurantNotFoundException.class,
-                () ->restaurantService.updateRestaurant(444L, "Sool zip", "Busan"));
+                () ->restaurantService.updateRestaurant(444L, requestData));
     }
 }

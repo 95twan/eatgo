@@ -1,6 +1,7 @@
 package com.example.eatgo.controller;
 
 import com.example.eatgo.domain.Restaurant;
+import com.example.eatgo.dto.RestaurantDto;
 import com.example.eatgo.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +31,15 @@ public class RestaurantController {
     }
 
     @PostMapping("/restaurants")
-    public ResponseEntity<?> create(@Valid @RequestBody Restaurant resource) throws URISyntaxException {
-        Restaurant restaurant = restaurantService.addRestaurant(resource);
+    public ResponseEntity<?> create(@Valid @RequestBody RestaurantDto.Request requestData) throws URISyntaxException {
+        Restaurant restaurant = restaurantService.addRestaurant(requestData);
         URI uri = new URI("/api/restaurants/" + restaurant.getId());
         return ResponseEntity.created(uri).body("{}");
     }
 
     @PatchMapping("/restaurants/{id}")
-    public String update(@PathVariable Long id, @Valid @RequestBody Restaurant resource){
-        restaurantService.updateRestaurant(id, resource.getName(), resource.getAddress());
+    public String update(@PathVariable Long id, @RequestBody RestaurantDto.Request requestData){
+        restaurantService.updateRestaurant(id, requestData);
         return "{}";
     }
 }

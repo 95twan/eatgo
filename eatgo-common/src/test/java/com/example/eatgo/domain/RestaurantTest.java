@@ -18,14 +18,4 @@ class RestaurantTest {
         assertEquals("Bob zip", restaurant.getName());
         assertEquals("Seoul", restaurant.getAddress());
     }
-
-    @Test
-    public void information(){
-        Restaurant restaurant = Restaurant.builder()
-                .id(1004L)
-                .name("Bob zip")
-                .address("Seoul")
-                .build();
-        assertEquals("Bob zip in Seoul", restaurant.getInformation());
-    }
 }

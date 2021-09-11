@@ -1,6 +1,7 @@
 package com.example.eatgo.controller;
 
 import com.example.eatgo.domain.Restaurant;
+import com.example.eatgo.dto.RestaurantDto;
 import com.example.eatgo.exception.RestaurantNotFoundException;
 import com.example.eatgo.service.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,12 +54,12 @@ class RestaurantControllerTest {
       given(restaurantService.getRestaurant(1004L)).willReturn(restaurant1);
       given(restaurantService.getRestaurant(444L)).willThrow(new RestaurantNotFoundException(404L));
       given(restaurantService.addRestaurant(any())).will(invocation -> {
-         Restaurant restaurant = invocation.getArgument(0);
+         RestaurantDto.Request request = invocation.getArgument(0);
          return Restaurant.builder()
                  .id(1234L)
-                 .categoryId(restaurant.getCategoryId())
-                 .name(restaurant.getName())
-                 .address(restaurant.getAddress())
+                 .categoryId(request.getCategoryId())
+                 .name(request.getName())
+                 .address(request.getAddress())
                  .build();
       });
    }
@@ -110,19 +112,11 @@ class RestaurantControllerTest {
    }
 
    @Test
-   public void updateWithValidData() throws Exception {
+   public void update() throws Exception {
       mockMvc.perform(patch("/api/restaurants/1004")
               .contentType(MediaType.APPLICATION_JSON)
               .content("{\"name\":\"JOKER Bar\", \"categoryId\":1, \"address\":\"Busan\"}"))
               .andExpect(status().isOk());
-      verify(restaurantService).updateRestaurant(1004L, "JOKER Bar", "Busan");
-   }
-
-   @Test
-   public void updateWithInvalidData() throws Exception {
-      mockMvc.perform(patch("/api/restaurants/1004")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content("{\"name\":\"JOKER \", \"address\":\"\"}"))
-              .andExpect(status().isBadRequest());
+      verify(restaurantService).updateRestaurant(eq(1004L), any());
    }
 }

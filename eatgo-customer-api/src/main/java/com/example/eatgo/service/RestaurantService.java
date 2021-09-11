@@ -39,8 +39,8 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new RestaurantNotFoundException(id));
         List<MenuItem> menuItems = menuItemRepository.findAllByRestaurantId(id);
         List<Review> reviews = reviewRepository.findAllByRestaurantId(id);
-        restaurant.addMenuItems(menuItems);
-        restaurant.addReviews(reviews);
+        menuItems.forEach(restaurant::addMenuItem);
+        reviews.forEach(restaurant::addReview);
         return restaurant;
     }
 }

@@ -2,6 +2,7 @@ package com.example.eatgo.service;
 
 import com.example.eatgo.domain.Restaurant;
 import com.example.eatgo.domain.RestaurantRepository;
+import com.example.eatgo.dto.RestaurantDto;
 import com.example.eatgo.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,20 @@ public class RestaurantService {
         return restaurantRepository.findById(id).orElseThrow(() -> new RestaurantNotFoundException(id));
     }
 
-    public Restaurant addRestaurant(Restaurant restaurant) {
+    public Restaurant addRestaurant(RestaurantDto.Request requestData) {
+        Restaurant restaurant = RestaurantDto.requestToEntity(requestData);
         return restaurantRepository.save(restaurant);
     }
 
     @Transactional
-    public Restaurant updateRestaurant(Long id, String name, String address) {
+    public Restaurant updateRestaurant(Long id, RestaurantDto.Request requestData) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new RestaurantNotFoundException(id));
-        restaurant.updateInformation(name, address);
+        if(!requestData.getName().isEmpty()){
+            restaurant.updateName(requestData.getName());
+        }
+        if(!requestData.getAddress().isEmpty()){
+            restaurant.updateAddress(requestData.getAddress());
+        }
 
         return restaurant;
     }
